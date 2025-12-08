@@ -11,7 +11,7 @@ const MyImports = () => {
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState(null);
 
-  const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:4000";
+  const baseUrl = import.meta.env.VITE_API_URL || "https://import-export-server-sigma.vercel.app";
 
   useEffect(() => {
     if (!user?.email) {

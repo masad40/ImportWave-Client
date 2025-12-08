@@ -6,7 +6,7 @@ const AddExportProduct = () => {
   const { user } = useContext(AuthContext);
   const userEmail = user?.email;
 
-  const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:4000";
+  const baseUrl = import.meta.env.VITE_API_URL || "https://import-export-server-sigma.vercel.app";
 
   const [formData, setFormData] = useState({
     name: "",
