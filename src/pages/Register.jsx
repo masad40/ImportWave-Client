@@ -56,7 +56,6 @@ const Register = () => {
       <Helmet>
         <title>Register - ImportWave</title>
       </Helmet>
-
       <div className="card w-full max-w-md shadow-2xl bg-white dark:bg-gray-800 transition-colors duration-500">
         <div className="card-body">
           <h2 className="text-2xl font-bold text-center mb-4 text-gray-900 dark:text-gray-100">
@@ -65,9 +64,7 @@ const Register = () => {
           <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
             Join GameHub and start your journey
           </p>
-
-          <form onSubmit={handelRegister} className="space-y-4">
-           
+          <form onSubmit={handelRegister} className="space-y-4">           
             <div>
               <label className="label font-medium text-gray-900 dark:text-gray-200">User Name</label>
               <input
@@ -78,7 +75,6 @@ const Register = () => {
                 required
               />
             </div>
-
             <div>
               <label className="label font-medium text-gray-900 dark:text-gray-200">Photo URL</label>
               <input
@@ -88,7 +84,6 @@ const Register = () => {
                 placeholder="Enter photo URL"
               />
             </div>
-
             <div>
               <label className="label font-medium text-gray-900 dark:text-gray-200">Email</label>
               <input
@@ -98,9 +93,7 @@ const Register = () => {
                 placeholder="Enter your email"
                 required
               />
-            </div>
-
-           
+            </div>        
             <div>
               <label className="label font-medium text-gray-900 dark:text-gray-200">Password</label>
               <div className="relative">
@@ -121,18 +114,15 @@ const Register = () => {
                 </button>
               </div>
             </div>
-
             {error && (
               <p className="text-red-500 text-sm text-center">{error}</p>
             )}
-
             <p className="text-sm text-gray-700 dark:text-gray-300 text-center">
               Already have an account?{" "}
               <Link className="text-blue-500 link link-hover" to={"/login"}>
                 Login
               </Link>
             </p>
-
             <button className="btn btn-neutral w-full mt-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700 transition-colors duration-300">
               Register
             </button>
