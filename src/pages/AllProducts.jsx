@@ -60,7 +60,7 @@ const AllProducts = () => {
       </Helmet>
 
       <div
-        className="max-w-7xl my-10 mx-auto px-4 mt-8
+        className="max-w-7xl py-10  mx-auto px-4 mt-8
                  bg-white dark:bg-gray-900
                  text-gray-900 dark:text-gray-100
                  rounded-lg shadow-md
@@ -69,7 +69,7 @@ const AllProducts = () => {
       >
         <h2 className="text-3xl font-bold mb-6 text-center">All Products</h2>
 
-        <div className="mb-6 flex justify-center">
+        <div className="mb-6 my-10 flex justify-center">
           <input
             type="text"
             placeholder="Search products by name..."
