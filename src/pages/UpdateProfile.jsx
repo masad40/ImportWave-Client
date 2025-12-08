@@ -22,13 +22,11 @@ const UpdateProfile = () => {
         toast.error("Failed to update profile!");
       });
   };
-
   return (
     <div className="hero min-h-screen my-10 bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
       <Helmet>
         <title>Update Profile - ImportWave</title>
       </Helmet>
-
       <div className="card w-full max-w-md shadow-2xl bg-white dark:bg-gray-900 rounded-xl">
         <div className="card-body p-8">
           <h2 className="text-2xl font-bold text-center mb-2 text-gray-900 dark:text-gray-100">
@@ -37,7 +35,6 @@ const UpdateProfile = () => {
           <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
             Keep your profile up to date
           </p>
-
           <form onSubmit={handleUpdate} className="space-y-6">
             <div>
               <label className="label font-medium text-gray-800 dark:text-gray-200">
@@ -52,7 +49,6 @@ const UpdateProfile = () => {
                 required
               />
             </div>
-
             <div>
               <label className="label font-medium text-gray-800 dark:text-gray-200">
                 Photo URL
@@ -65,7 +61,6 @@ const UpdateProfile = () => {
                 placeholder="Enter photo URL"
               />
             </div>
-
             <button
               type="submit"
               className="btn btn-success w-full mt-2 bg-green-600 hover:bg-green-700 text-white rounded-md shadow-md transition duration-300"
