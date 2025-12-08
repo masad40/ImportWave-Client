@@ -38,7 +38,6 @@ export const router = createBrowserRouter([
       { path: "/register", element: <Register /> },
       { path: "/myProfile", element: <MyProfile /> },
 
-      // ✔ Correct dynamic route
       {
         path: "/productDetails/:id",
         element: (
