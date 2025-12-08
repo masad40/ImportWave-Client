@@ -102,7 +102,6 @@ const AllProducts = () => {
             No products found.
           </p>
         )}
-
         <div className="grid md:grid-cols-3 gap-6">
           {products.map((item) => (
             <ProductCard key={item._id} item={item} />
