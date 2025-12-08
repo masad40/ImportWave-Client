@@ -6,7 +6,7 @@ import AddExport from "../pages/AddExport";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import MyProfile from "../pages/MyProfile";
-import ProductDetails from "../pages/ProductDetails";   // FIXED
+import ProductDetails from "../pages/ProductDetails";   
 import MyImports from "../pages/MyImports";
 import MyExports from "../pages/MyExports";
 import UpdateProfile from "../pages/UpdateProfile";
