@@ -88,7 +88,7 @@ const Footer = () => {
       <aside className="mt-6 text-center">
         <p className="text-sm text-gray-700 dark:text-gray-300">
           © {new Date().getFullYear()} — All rights reserved by{" "}
-          <span className="font-semibold">ImportHub</span>
+          <span className="font-semibold">IMPORTWAVE</span>
         </p>
       </aside>
     </footer>
