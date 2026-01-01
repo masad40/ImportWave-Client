@@ -6,11 +6,7 @@ It features a clean UI, secure authentication, and a smart dashboard for managin
 ---
 
 ## 🚀 Live Demo
-(Replace with your live link when available)
-
-```
-https://your-domain.com
-```
+https://import-wave.netlify.app/
 
 ---
 
@@ -74,7 +70,7 @@ ImportWave/
 
 ### 1️⃣ Clone the repository
 ```bash
-git clone https://github.com/your-username/importwave.git
+git clone https://github.com/masad40/ImportWave-Client.git
 cd importwave
 ```
 
@@ -94,21 +90,7 @@ npm start
 
 ---
 
-## 🔐 Environment Variables
 
-### Client (`.env`)
-```
-VITE_IMGBB_KEY=your_key
-VITE_API_URL=http://localhost:5000
-```
-
-### Server (`.env`)
-```
-MONGO_URI=your_mongodb_uri
-JWT_SECRET=your_secret
-```
-
----
 
 ## 🤝 Contributing
 
