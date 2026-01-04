@@ -183,13 +183,7 @@ const DashboardHome = () => {
                 Add New Export Product
               </Link>
 
-              <Link
-                to="/allProducts"
-                className="flex items-center justify-center gap-4 py-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold text-xl rounded-2xl shadow-xl transition transform hover:scale-105"
-              >
-                <span className="text-3xl">🌍</span>
-                Browse Global Products
-              </Link>
+              
 
               <Link
                 to="/dashboard/myExport"
