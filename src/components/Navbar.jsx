@@ -1,237 +1,350 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { IoMdHome } from "react-icons/io";
-import { IoLogOut, IoLogIn } from "react-icons/io5";
-import { MdOutlineProductionQuantityLimits, MdOutlineImportantDevices } from "react-icons/md";
-import { TbDatabaseExport, TbDatabaseImport } from "react-icons/tb";
-import { AiOutlineExport } from "react-icons/ai";
-
-import toast from "react-hot-toast";
 import { AuthContext } from "../contexts/AuthContext";
+import { Helmet } from "react-helmet";
+import toast from "react-hot-toast";
+import {
+  SunIcon,
+  MoonIcon,
+  HomeIcon,
+  GlobeAltIcon,
+  InformationCircleIcon,
+  PhoneIcon,
+  ShieldCheckIcon,
+  DocumentTextIcon,
+  ChartBarIcon,
+  ArrowRightOnRectangleIcon,
+  KeyIcon,
+  UserPlusIcon,
+} from "@heroicons/react/24/solid";
 
 const NavBar = () => {
-  const { user, logOut, setLoading, setUser } = useContext(AuthContext);
+  const { user, logOut } = useContext(AuthContext);
 
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem("theme");
+    if (saved) return saved;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  });
 
   useEffect(() => {
-    const html = document.querySelector("html");
-    html.setAttribute("data-theme", theme);
+    document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.classList.toggle("dark", theme === "dark");
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  const handleTheme = (checked) => {
-    setTheme(checked ? "dark" : "light");
+  const toggleTheme = () =>
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+
+  const handleLogout = async () => {
+    await logOut();
+    toast.success("Logged out successfully!");
   };
 
-  const links = (
-    <>
-      <li>
-        <NavLink
-          to="/"
-          className={({ isActive }) =>
-            isActive
-              ? "text-blue-600 font-bold border-b-2 border-blue-600 dark:text-blue-400"
-              : "hover:text-blue-600 transition-colors duration-200 dark:hover:text-blue-400"
-          }
-        >
-          <IoMdHome className="inline mr-1" />
-          Home
-        </NavLink>
-      </li>
-      <li>
-        <NavLink
-          to="/allProducts"
-          className={({ isActive }) =>
-            isActive
-              ? "text-blue-600 font-bold border-b-2 border-blue-600 dark:text-blue-400"
-              : "hover:text-blue-600 transition-colors duration-200 dark:hover:text-blue-400"
-          }
-        >
-          <MdOutlineProductionQuantityLimits className="inline mr-1" />
-          All Products
-        </NavLink>
-      </li>
-      <li>
-        <NavLink
-          to="/myExport"
-          className={({ isActive }) =>
-            isActive
-              ? "text-blue-600 font-bold border-b-2 border-blue-600 dark:text-blue-400"
-              : "hover:text-blue-600 transition-colors duration-200 dark:hover:text-blue-400"
-          }
-        >
-          <TbDatabaseExport className="inline mr-1" />
-          My Export
-        </NavLink>
-      </li>
-      <li>
-        <NavLink
-          to="/myImport"
-          className={({ isActive }) =>
-            isActive
-              ? "text-blue-600 font-bold border-b-2 border-blue-600 dark:text-blue-400"
-              : "hover:text-blue-600 transition-colors duration-200 dark:hover:text-blue-400"
-          }
-        >
-          <TbDatabaseImport className="inline mr-1" />
-          My Import
-        </NavLink>
-      </li>
-      <li>
-        <NavLink
-          to="/addExport"
-          className={({ isActive }) =>
-            isActive
-              ? "text-blue-600 font-semibold border-b-2 border-blue-600 dark:text-blue-400"
-              : "hover:text-blue-600 transition-colors duration-200 dark:hover:text-blue-400"
-          }
-        >
-          <AiOutlineExport className="inline mr-1" />
-          Add Export
-        </NavLink>
-      </li>
-    </>
-  );
-
   return (
-    <div className="navbar py-0 min-h-0 z-50 rounded-full shadow-lg px-4 sm:px-8 lg:px-12
-                    bg-gradient-to-r from-[#f3e7ff]/90 via-[#e0f7fa]/90 to-[#fff3e0]/90 
-                    dark:from-[#1e1b4b]/90 dark:via-[#1e293b]/90 dark:to-[#0f172a]/90 
-                    backdrop-blur-md border border-white/20 dark:border-gray-700 glass-card">
-      <div className="navbar-start">
-        <div className="dropdown">
-          <div tabIndex={0} role="button" className="btn btn-ghost md:hidden">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 dark:stroke-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h8m-8 6h16"
-              />
-            </svg>
-          </div>
-          <ul
-            tabIndex="-1"
-            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow dark:bg-gray-900"
-          >
-            {links}
-          </ul>
-        </div>
-        <Link
-          to="/"
-          className="flex items-center gap-1 text-xl font-bold text-gray-800 dark:text-gray-200"
-        >
-          <MdOutlineImportantDevices className="mr-1" />
-          IᗰᑭOᖇTᗯᗩᐯE
-        </Link>
-      </div>
+    <>
+      <Helmet>
+        <title>ImportWave — Global Trade Hub</title>
+        <meta
+          name="description"
+          content="ImportWave makes global trade simpler with secure tools and effortless import & export solutions."
+        />
+      </Helmet>
 
-      <div className="navbar-center hidden md:flex">
-        <ul className="menu menu-horizontal px-1 gap-10 text-gray-800 dark:text-gray-200">
-          {links}
-        </ul>
-      </div>
-
-      <div className="navbar-end gap-3">
-        {user ? (
-          <div className="dropdown dropdown-end z-50">
-            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-              <div className="w-9 border-2 border-gray-300 rounded-full dark:border-gray-600">
-                <img
-                  alt="User avatar"
-                  referrerPolicy="no-referrer"
-                  src={
-                    user.photoURL ||
-                    "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                  }
-                  className="rounded-full"
+      <div className="navbar bg-base-100 dark:bg-gray-900 shadow-xl px-4 sm:px-6 lg:px-12 sticky top-0 z-50 border-b border-gray-200 dark:border-gray-700">
+        <div className="navbar-start">
+          <div className="dropdown lg:hidden">
+            <label tabIndex={0} className="btn btn-ghost btn-circle">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-7 w-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
                 />
-              </div>
-            </div>
+              </svg>
+            </label>
+
             <ul
-              tabIndex="-1"
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow dark:bg-gray-900"
+              tabIndex={0}
+              className="menu dropdown-content mt-3 p-4 shadow-lg bg-base-100 dark:bg-gray-800 rounded-box w-72 z-50 space-y-1"
             >
-              <div className="pb-3 border-b border-gray-200 dark:border-gray-700">
-                <li className="text-sm font-bold text-gray-900 dark:text-gray-100">{user.displayName}</li>
-                <li className="text-xs text-gray-600 dark:text-gray-400">{user.email}</li>
-              </div>
-
-              <li className="mt-1">
-                <Link to="/myProfile" className="text-gray-800 dark:text-gray-200">
-                  My Profile
-                </Link>
-              </li>
-
-              <li className="mt-2 flex items-center justify-between px-2">
-                <span className="text-gray-800 dark:text-gray-200 text-sm">
-                  {theme === "dark" ? "Dark Mode" : "Light Mode"}
-                </span>
-                <label className="swap swap-rotate">
-                  <input
-                    type="checkbox"
-                    onChange={(e) => handleTheme(e.target.checked)}
-                    checked={theme === "dark"}
-                    className="hidden"
-                    aria-label="Toggle dark mode"
-                  />
-                  <svg
-                    className="swap-on fill-current w-6 h-6 text-yellow-400"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M5.64 17.657A7.957 7.957 0 0112 4a7.956 7.956 0 016.364 13.657 8.003 8.003 0 01-12.724 0z" />
-                  </svg>
-                  <svg
-                    className="swap-off fill-current w-6 h-6 text-gray-800 dark:text-gray-200"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M6.05 6.05L4.636 4.636m12.728 12.728l-1.414-1.414M6.05 17.95l-1.414 1.414M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                </label>
-              </li>
-
-              <li className="mt-2">
-                <button
-                  onClick={() => {
-                    logOut();
-                    setUser(null);
-                    toast.success("Logout successfully");
-                    setLoading(false);
-                  }}
-                  className="btn btn-xs text-left bg-gradient-to-r from-pink-500 to-red-500 text-white"
+              <li>
+                <NavLink
+                  to="/"
+                  end
+                  className="flex items-center gap-3 py-3 text-base font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
-                  <IoLogOut className="inline mr-1" /> Logout
+                  <HomeIcon className="h-5 w-5" />
+                  Home
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/explore"
+                  className="flex items-center gap-3 py-3 text-base font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <GlobeAltIcon className="h-5 w-5" />
+                  Explore
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/about"
+                  className="flex items-center gap-3 py-3 text-base font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <InformationCircleIcon className="h-5 w-5" />
+                  About
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/contact"
+                  className="flex items-center gap-3 py-3 text-base font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <PhoneIcon className="h-5 w-5" />
+                  Contact
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/privacy"
+                  className="flex items-center gap-3 py-3 text-base font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <ShieldCheckIcon className="h-5 w-5" />
+                  Privacy
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/terms"
+                  className="flex items-center gap-3 py-3 text-base font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <DocumentTextIcon className="h-5 w-5" />
+                  Terms
+                </NavLink>
+              </li>
+
+              <div className="border-t border-gray-300 dark:border-gray-600 my-4" />
+
+              {user ? (
+                <>
+                  <li>
+                    <NavLink
+                      to="/dashboard"
+                      className="flex items-center gap-3 py-3 text-base font-medium rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30"
+                    >
+                      <ChartBarIcon className="h-5 w-5" />
+                      Dashboard
+                    </NavLink>
+                  </li>
+
+                  <li>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-3 py-3 text-base font-medium text-error w-full text-left rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30"
+                    >
+                      <ArrowRightOnRectangleIcon className="h-5 w-5" />
+                      Logout
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <NavLink
+                      to="/login"
+                      className="btn btn-outline btn-primary w-full text-base font-medium py-2.5 rounded-lg flex items-center justify-center gap-2"
+                    >
+                      <KeyIcon className="h-5 w-5" />
+                      Login
+                    </NavLink>
+                  </li>
+
+                  <li>
+                    <NavLink
+                      to="/register"
+                      className="btn btn-primary w-full text-base font-medium py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-md"
+                    >
+                      <UserPlusIcon className="h-5 w-5" />
+                      Register
+                    </NavLink>
+                  </li>
+                </>
+              )}
+
+              <div className="border-t border-gray-300 dark:border-gray-600 my-4" />
+
+              <li>
+                <button
+                  onClick={toggleTheme}
+                  className="flex items-center justify-between w-full py-3 text-base font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 px-3"
+                >
+                  <span className="flex items-center gap-3">
+                    {theme === "dark" ? (
+                      <SunIcon className="h-5 w-5 text-yellow-500" />
+                    ) : (
+                      <MoonIcon className="h-5 w-5 text-indigo-600" />
+                    )}
+                    {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                  </span>
                 </button>
               </li>
             </ul>
           </div>
-        ) : (
-          <>
-            <Link
-              to="/login"
-              className="btn rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold shadow-lg px-5 py-2 transition-all duration-300"
-            >
-              <IoLogIn className="inline mr-1" /> Log In
-            </Link>
-            <Link
-              to="/register"
-              className="btn bg-gradient-to-r from-teal-500 to-emerald-600 text-white px-5 py-2 rounded-xl transition-all duration-300 hover:shadow-xl"
-            >
-              Register
-            </Link>
-          </>
-        )}
+
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="text-4xl group-hover:scale-110 transition-transform">
+              🌍
+            </div>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-black text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition">
+                ImportWave
+              </h1>
+              <p className="text-xs text-gray-600 dark:text-gray-400 font-medium -mt-1">
+                Global Trade Hub
+              </p>
+            </div>
+          </Link>
+        </div>
+
+        <div className="navbar-center hidden lg:flex">
+          <ul className="menu menu-horizontal gap-8 text-lg font-medium">
+            {[
+              { to: "/", label: "Home", icon: HomeIcon },
+              { to: "/explore", label: "Explore", icon: GlobeAltIcon },
+              { to: "/about", label: "About", icon: InformationCircleIcon },
+              { to: "/contact", label: "Contact", icon: PhoneIcon },
+              { to: "/privacy", label: "Privacy", icon: ShieldCheckIcon },
+              { to: "/terms", label: "Terms", icon: DocumentTextIcon },
+            ].map(({ to, label, icon: Icon }) => (
+              <li key={to}>
+                <NavLink
+                  to={to}
+                  end={to === "/"}
+                  className={({ isActive }) =>
+                    `flex items-center gap-2.5 transition ${
+                      isActive
+                        ? "text-blue-600 dark:text-blue-400 border-b-4 border-blue-600 pb-2"
+                        : "hover:text-blue-600 dark:hover:text-blue-400"
+                    }`
+                  }
+                >
+                  <Icon className="h-6 w-6" />
+                  {label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="navbar-end flex items-center gap-4">
+          <button
+            onClick={toggleTheme}
+            className="btn btn-ghost btn-circle tooltip tooltip-bottom group"
+            data-tip={theme === "dark" ? "Light Mode" : "Dark Mode"}
+          >
+            <div className="relative w-8 h-8 flex items-center justify-center overflow-hidden">
+              <SunIcon
+                className={`h-7 w-7 text-yellow-500 absolute transition-all duration-700 ${
+                  theme === "dark"
+                    ? "translate-y-0 opacity-100"
+                    : "-translate-y-16 opacity-0"
+                } group-hover:text-yellow-400`}
+              />
+              <MoonIcon
+                className={`h-7 w-7 text-indigo-500 absolute transition-all duration-700 ${
+                  theme === "dark"
+                    ? "translate-y-16 opacity-0"
+                    : "translate-y-0 opacity-100"
+                } group-hover:text-indigo-400`}
+              />
+            </div>
+          </button>
+
+          {user ? (
+            <div className="dropdown dropdown-end">
+              <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+                <div className="w-12 rounded-full ring-4 ring-blue-600 ring-offset-2 ring-offset-base-100 shadow-xl">
+                  <img
+                    src={
+                      user?.photoURL ||
+                      "https://i.ibb.co/Q3LYhjtx/pngtree-user-icon-png-image-1796659.jpg"
+                    }
+                    alt="User"
+                    className="object-cover"
+                  />
+                </div>
+              </label>
+
+              <ul
+                tabIndex={0}
+                className="menu dropdown-content mt-4 p-6 shadow-2xl bg-base-100 dark:bg-gray-800 rounded-2xl w-64 border border-gray-200 dark:border-gray-700"
+              >
+                <div className="text-center pb-4 border-b dark:border-gray-700">
+                  <img
+                    src={
+                      user?.photoURL ||
+                      "https://i.ibb.co/Q3LYhjtx/pngtree-user-icon-png-image-1796659.jpg"
+                    }
+                    alt="User"
+                    className="w-20 h-20 rounded-full mx-auto mb-3 border-4 border-blue-600"
+                  />
+                  <p className="font-bold text-xl">
+                    {user?.displayName || "Trader"}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {user?.email}
+                  </p>
+                </div>
+
+                <li className="mt-4">
+                  <NavLink
+                    to="/dashboard"
+                    className="flex items-center gap-3 justify-center py-4 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30"
+                  >
+                    <ChartBarIcon className="h-6 w-6" />
+                    Dashboard
+                  </NavLink>
+                </li>
+
+                <li>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 justify-center py-4 text-error rounded-xl hover:bg-red-50 dark:hover:bg-red-900/30"
+                  >
+                    <ArrowRightOnRectangleIcon className="h-6 w-6" />
+                    Logout
+                  </button>
+                </li>
+              </ul>
+            </div>
+          ) : (
+            <div className="hidden md:flex gap-3">
+              <NavLink className="btn btn-outline btn-primary px-6 py-3 text-base font-medium rounded-xl" to="/login">
+                Login
+              </NavLink>
+              <NavLink className="btn btn-primary px-6 py-3 text-base font-bold rounded-xl shadow-lg" to="/register">
+                Register
+              </NavLink>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

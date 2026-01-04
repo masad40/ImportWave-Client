@@ -1,97 +1,162 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
+import {
+  GlobeAltIcon,
+  TruckIcon,
+  ShieldCheckIcon,
+  PhoneIcon,
+  EnvelopeIcon,
+  MapPinIcon,
+} from "@heroicons/react/24/outline";
+import {
+  FaTwitter,
+  FaYoutube,
+  FaFacebookF,
+  FaLinkedinIn,
+  FaInstagram,
+} from "react-icons/fa";
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="bg-gradient-to-r from-blue-400 to-red-300 text-base-content p-10 dark:from-blue-900 dark:to-red-700 dark:text-gray-200">
-      <div className="flex flex-col items-center gap-6 md:flex-row md:justify-between max-w-6xl mx-auto">
-        <nav className="flex flex-col md:flex-row gap-4 text-lg font-medium text-center md:text-left">
-          <a className="link link-hover hover:text-white transition">About Us</a>
-          <a className="link link-hover hover:text-white transition">Contact</a>
-          <a className="link link-hover hover:text-white transition">Jobs</a>
-          <a className="link link-hover hover:text-white transition">Press Kit</a>
-        </nav>
+    <>
+      <Helmet>
+        <title>ImportWave — Global Trade Hub</title>
+        <meta
+          name="description"
+          content="ImportWave helps businesses simplify international import and export with trusted partners worldwide."
+        />
+      </Helmet>
 
-        <nav>
-          <div className="flex gap-6 justify-center">
-            <a
-              href="https://twitter.com"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:scale-110 transition-transform duration-300"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                className="fill-current text-blue-500 dark:text-blue-400"
-              >
-                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 
-                1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 
-                1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 
-                0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 
-                2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 
-                2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 
-                1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 
-                2.348-7.29 2.04 2.179 1.397 4.768 2.212 
-                7.548 2.212 9.142 0 14.307-7.721 
-                13.995-14.646.962-.695 1.797-1.562 
-                2.457-2.549z" />
-              </svg>
-            </a>
+      <footer className="bg-gradient-to-r from-blue-500 to-emerald-500 dark:from-blue-950 dark:to-emerald-950 text-white py-16 mt-20">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
+          <div className="space-y-6">
+            <div className="flex items-center gap-4">
+              <GlobeAltIcon className="h-12 w-12 text-white" />
+              <div>
+                <h3 className="text-3xl font-black">ImportWave</h3>
+                <p className="text-sm opacity-90 -mt-1">Global Trade Hub</p>
+              </div>
+            </div>
 
-            <a
-              href="https://youtube.com"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:scale-110 transition-transform duration-300"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                className="fill-current text-red-600 dark:text-red-500"
-              >
-                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 
-                0-3.897.266-4.356 2.62-4.385 
-                8.816.029 6.185.484 8.549 4.385 
-                8.816 3.6.245 11.626.246 15.23 
-                0 3.897-.266 4.356-2.62 
-                4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 
-                12.816v-8l8 3.993-8 4.007z" />
-              </svg>
-            </a>
+            <p className="text-white/80 leading-relaxed">
+              Your trusted platform for seamless international import and export.
+              Connecting businesses worldwide since 2024.
+            </p>
 
-            <a
-              href="https://facebook.com"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:scale-110 transition-transform duration-300"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                className="fill-current text-blue-700 dark:text-blue-400"
+            <div className="flex gap-5 mt-6 flex-wrap">
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:scale-125 transition-transform duration-300"
               >
-                <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 
-                1.115-1.333h2.885v-5h-3.808c-3.596 
-                0-5.192 1.583-5.192 4.615v3.385z" />
-              </svg>
-            </a>
+                <FaTwitter className="h-7 w-7" />
+              </a>
+
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:scale-125 transition-transform duration-300"
+              >
+                <FaFacebookF className="h-7 w-7" />
+              </a>
+
+              <a
+                href="https://linkedin.com"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:scale-125 transition-transform duration-300"
+              >
+                <FaLinkedinIn className="h-7 w-7" />
+              </a>
+
+              <a
+                href="https://youtube.com"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:scale-125 transition-transform duration-300"
+              >
+                <FaYoutube className="h-7 w-7" />
+              </a>
+
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:scale-125 transition-transform duration-300"
+              >
+                <FaInstagram className="h-7 w-7" />
+              </a>
+            </div>
           </div>
-        </nav>
-      </div>
 
-      <aside className="mt-6 text-center">
-        <p className="text-sm text-gray-700 dark:text-gray-300">
-          © {new Date().getFullYear()} — All rights reserved by{" "}
-          <span className="font-semibold">IMPORTWAVE</span>
-        </p>
-      </aside>
-    </footer>
+          <div>
+            <h4 className="text-xl font-bold mb-6 flex items-center gap-3">
+              <TruckIcon className="h-6 w-6" />
+              Quick Links
+            </h4>
+
+            <ul className="space-y-4">
+              <li><Link to="/" className="hover:text-white/70">Home</Link></li>
+              <li><Link to="/explore" className="hover:text-white/70">Explore Products</Link></li>
+              <li><Link to="/about" className="hover:text-white/70">About Us</Link></li>
+              <li><Link to="/contact" className="hover:text-white/70">Contact</Link></li>
+              <li><Link to="/dashboard" className="hover:text-white/70">Dashboard</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-xl font-bold mb-6 flex items-center gap-3">
+              <ShieldCheckIcon className="h-6 w-6" />
+              Legal & Support
+            </h4>
+
+            <ul className="space-y-4">
+              <li><Link to="/privacy" className="hover:text-white/70">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="hover:text-white/70">Terms of Service</Link></li>
+              <li><Link to="/shipping" className="hover:text-white/70">Shipping Policy</Link></li>
+              <li><Link to="/faq" className="hover:text-white/70">FAQ</Link></li>
+              <li><Link to="/support" className="hover:text-white/70">Support Center</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-xl font-bold mb-6 flex items-center gap-3">
+              <PhoneIcon className="h-6 w-6" />
+              Get in Touch
+            </h4>
+
+            <ul className="space-y-4 text-white/80">
+              <li className="flex items-center gap-3">
+                <EnvelopeIcon className="h-5 w-5" />
+                support@importwave.com
+              </li>
+
+              <li className="flex items-center gap-3">
+                <PhoneIcon className="h-5 w-5" />
+                +1 (555) 123-4567
+              </li>
+
+              <li className="flex items-center gap-3">
+                <MapPinIcon className="h-5 w-5" />
+                Dhaka, Bangladesh
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-12 pt-8 border-t border-white/20 text-center">
+          <p className="text-white/70 text-sm">
+            © {currentYear} <span className="font-bold text-white">ImportWave</span>. All rights reserved.
+            Empowering global trade, one connection at a time.
+          </p>
+        </div>
+      </footer>
+    </>
   );
 };
 

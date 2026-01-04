@@ -8,135 +8,208 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
   const { signInUser, googleLogin } = useContext(AuthContext);
-  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (event) => {
-    event.preventDefault();
-    const email = event.target.email.value;
-    const password = event.target.password.value;
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const email = e.target.email.value.trim();
+    const password = e.target.password.value;
 
-    signInUser(email, password)
-      .then(() => {
-        setError("");
-        event.target.reset();
-        navigate("/");
-        toast.success("Login successful!");
-      })
-      .catch((err) => {
-        setError("Invalid email or password");
-        console.error(err.message);
-      });
+    if (!email || !password) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      await signInUser(email, password);
+      toast.success("Login successful! Welcome back 🎉");
+      e.target.reset();
+      navigate("/"); 
+    } catch (err) {
+      const message =
+        err.code === "auth/user-not-found" || err.code === "auth/wrong-password"
+          ? "Invalid email or password"
+          : "Login failed. Please try again.";
+      setError(message);
+      toast.error(message);
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleGoogleLogin = () => {
-    googleLogin()
-      .then((result) => {
-        toast.success(`Welcome, ${result.user.displayName}!`);
-        navigate("/");
-      })
-      .catch((err) => {
-        console.error(err);
-        toast.error("Google login failed!");
-      });
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const result = await googleLogin();
+      toast.success(`Welcome back, ${result.user.displayName || "Trader"}! 🎉`);
+      navigate("/");
+    } catch (err) {
+      toast.error("Google login failed");
+      setError("Google sign in failed");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="hero min-h-screen my-10 bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 transition-colors duration-500">
-
-     
+    <>
       <Helmet>
-        <title>Login | ImportWave</title>
-        <meta name="description" content="Login to your ImportWave account." />
+        <title>Login | ImportWave - Access Your Global Trade Hub</title>
+        <meta
+          name="description"
+          content="Log in to your ImportWave account and manage your international trade seamlessly."
+        />
       </Helmet>
 
-      <div className="card w-full max-w-md shadow-2xl bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg transition-colors duration-500">
-        <div className="card-body">
-          <h2 className="text-2xl font-bold text-center mb-4 text-gray-900 dark:text-gray-100">
-            Welcome Back
-          </h2>
-          <p className="text-center font-medium text-gray-600 dark:text-gray-400 mb-6">
-            Please login to continue
-          </p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-gray-50 to-emerald-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950 py-16 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h1 className="text-5xl md:text-6xl font-extrabold mb-4 bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
+              Welcome Back
+            </h1>
+            <p className="text-xl text-gray-600 dark:text-gray-400">
+              Log in to continue your global trading journey
+            </p>
+          </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="label font-medium text-gray-800 dark:text-gray-200">
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                className="input input-bordered w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300"
-                placeholder="Enter your email"
-                required
-              />
-            </div>
+          <div className="grid lg:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
+            {/* Login Form */}
+            <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-10 border border-gray-200 dark:border-gray-700">
+              <h2 className="text-3xl font-bold mb-8 text-center">Sign In to Your Account</h2>
 
-            <div>
-              <label className="label font-medium text-gray-800 dark:text-gray-200">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  className="input input-bordered w-full pr-10 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300"
-                  placeholder="Enter your password"
-                  required
-                />
+              <form onSubmit={handleLogin} className="space-y-6">
+                <div>
+                  <label className="block text-lg font-medium mb-2">Email Address</label>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    className="input input-bordered w-full text-lg py-4"
+                    required
+                    disabled={loading}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-lg font-medium mb-2">Password</label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      placeholder="••••••••"
+                      className="input input-bordered w-full text-lg py-4 pr-12"
+                      required
+                      disabled={loading}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-xl text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                      disabled={loading}
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
+                </div>
+
+                {error && (
+                  <div className="alert alert-error shadow-lg py-3 rounded-xl">
+                    <span className="text-sm">{error}</span>
+                  </div>
+                )}
+
+                <div className="flex justify-end">
+                  <Link
+                    to="/forgot-password"
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+
                 <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-300"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-5 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white font-bold text-xl rounded-2xl shadow-xl transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  {loading ? (
+                    <>
+                      <span className="loading loading-spinner"></span>
+                      Signing In...
+                    </>
+                  ) : (
+                    "Log In"
+                  )}
+                </button>
+              </form>
+
+              <div className="mt-8">
+                <div className="divider text-gray-500 dark:text-gray-400">OR</div>
+
+                <button
+                  onClick={handleGoogleLogin}
+                  disabled={loading}
+                  className="w-full mt-6 py-4 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 text-gray-800 dark:text-gray-200 font-bold text-lg rounded-2xl shadow-lg transition flex items-center justify-center gap-4 disabled:opacity-70"
+                >
+                  {loading ? (
+                    <span className="loading loading-spinner"></span>
+                  ) : (
+                    <FcGoogle className="text-2xl" />
+                  )}
+                  Continue with Google
                 </button>
               </div>
-            </div>
 
-            {error && (
-              <p className="text-red-500 text-sm text-center">{error}</p>
-            )}
-
-            <div className="flex justify-between text-sm mt-1">
-              <Link
-                to="/forgetPassword"
-                className="link link-hover text-blue-600 dark:text-blue-400"
-              >
-                Forgot password?
-              </Link>
-              <p className="text-gray-700 dark:text-gray-300">
-                New here?{" "}
-                <Link
-                  to="/register"
-                  className="text-blue-600 dark:text-blue-400 link link-hover"
-                >
-                  Register
+              <p className="text-center mt-8 text-gray-600 dark:text-gray-400">
+                New to ImportWave?{" "}
+                <Link to="/register" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-bold">
+                  Create an account
                 </Link>
               </p>
             </div>
 
-            <button className="btn btn-neutral w-full mt-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-indigo-600 hover:to-blue-700 transition-colors duration-300">
-              Login
-            </button>
+            {/* Visual Side */}
+            <div className="hidden lg:block">
+              <div className="bg-gradient-to-br from-blue-600/10 to-emerald-600/10 dark:from-blue-900/20 dark:to-emerald-900/20 rounded-3xl p-12 text-center border border-gray-200 dark:border-gray-700">
+                <div className="mb-10">
+                  <div className="text-9xl mb-6">🌍</div>
+                  <h3 className="text-4xl font-bold mb-4 text-gray-800 dark:text-gray-100">
+                    Access Your Global Marketplace
+                  </h3>
+                  <p className="text-xl text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+                    Connect with suppliers, manage imports, track shipments — all in one powerful dashboard.
+                  </p>
+                </div>
 
-            <div className="divider text-gray-700 dark:text-gray-400">OR</div>
-
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              className="btn btn-outline btn-info w-full flex items-center justify-center gap-2 text-gray-700 dark:text-gray-200 border-gray-400 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 transition-colors duration-300"
-            >
-              <FcGoogle className="text-2xl" />
-              Continue with Google
-            </button>
-          </form>
+                <div className="grid grid-cols-3 gap-6 mt-12 text-center">
+                  <div className="bg-white/70 dark:bg-gray-800/50 backdrop-blur rounded-2xl p-6">
+                    <div className="text-4xl mb-2">📦</div>
+                    <p className="font-semibold">Import Products</p>
+                  </div>
+                  <div className="bg-white/70 dark:bg-gray-800/50 backdrop-blur rounded-2xl p-6">
+                    <div className="text-4xl mb-2">🚢</div>
+                    <p className="font-semibold">Track Shipments</p>
+                  </div>
+                  <div className="bg-white/70 dark:bg-gray-800/50 backdrop-blur rounded-2xl p-6">
+                    <div className="text-4xl mb-2">💼</div>
+                    <p className="font-semibold">Manage Suppliers</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

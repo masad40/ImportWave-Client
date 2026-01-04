@@ -1,135 +1,253 @@
-import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom"; 
+import { useContext, useState } from "react";
+import { Helmet } from "react-helmet";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
-import { Helmet } from "react-helmet";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 
 const Register = () => {
-  const { createUser, updateProfileInfo } = useContext(AuthContext);
-  const [error, setError] = useState("");
+  const { createUser, updateProfileInfo, googleLogin } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [photoURL, setPhotoURL] = useState("");
+  const [photoPreview, setPhotoPreview] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
 
-  const handelRegister = (event) => {
-    event.preventDefault();
-    const email = event.target.email.value;
-    const password = event.target.password.value;
-    const name = event.target.name.value;
-    const photoUrl = event.target.photoURL.value;
+  const validatePassword = (pass) => {
+    if (pass.length < 6) return "Password must be at least 6 characters";
+    if (!/[A-Z]/.test(pass)) return "Must contain an uppercase letter";
+    if (!/[a-z]/.test(pass)) return "Must contain a lowercase letter";
+    return "";
+  };
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long");
-      return;
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    setPasswordError(validatePassword(value));
+  };
+
+  const handlePhotoChange = (e) => {
+    const url = e.target.value.trim();
+    setPhotoURL(url);
+    setPhotoPreview(url);
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    if (!name.trim()) return toast.error("Name is required");
+    if (!email.trim()) return toast.error("Email is required");
+    if (!/^\S+@\S+\.\S+$/.test(email)) return toast.error("Invalid email format");
+    if (passwordError) return toast.error(passwordError);
+
+    setLoading(true);
+
+    try {
+      const userCredential = await createUser(email, password);
+      await updateProfileInfo(name.trim(), photoURL || null);
+
+      toast.success("Account created successfully! Welcome to ImportWave 🎉");
+      
+      setName("");
+      setEmail("");
+      setPassword("");
+      setPhotoURL("");
+      setPhotoPreview("");
+      setPasswordError("");
+
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message || "Registration failed. Try again.");
+    } finally {
+      setLoading(false);
     }
-    if (!/[A-Z]/.test(password)) {
-      setError("Password must include at least one uppercase letter");
-      return;
+  };
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      await googleLogin();
+      toast.success("Signed in with Google! Welcome 🎉");
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message || "Google sign in failed");
+    } finally {
+      setLoading(false);
     }
-    if (!/[a-z]/.test(password)) {
-      setError("Password must include at least one lowercase letter");
-      return;
-    }
-
-    setError("");
-
-    createUser(email, password)
-      .then(() => {
-        updateProfileInfo(name, photoUrl)
-          .then(() => {
-            toast.success("Profile updated successfully!");
-          })
-          .catch((err) => {
-            console.error("Profile update error:", err);
-            toast.error("Profile update failed!");
-          });
-
-        event.target.reset();
-        toast.success("Registered Successfully!");
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
   };
 
   return (
-    <div className="hero min-h-screen my-10 bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-500">
+    <>
       <Helmet>
-        <title>Register - ImportWave</title>
+        <title>Register | ImportWave - Join Global Marketplace</title>
+        <meta
+          name="description"
+          content="Create your free account on ImportWave and start importing/exporting products worldwide."
+        />
       </Helmet>
-      <div className="card w-full max-w-md shadow-2xl bg-white dark:bg-gray-800 transition-colors duration-500">
-        <div className="card-body">
-          <h2 className="text-2xl font-bold text-center mb-4 text-gray-900 dark:text-gray-100">
-            Create Account
-          </h2>
-          <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
-            Join GameHub and start your journey
-          </p>
-          <form onSubmit={handelRegister} className="space-y-4">           
-            <div>
-              <label className="label font-medium text-gray-900 dark:text-gray-200">User Name</label>
-              <input
-                name="name"
-                type="text"
-                className="input input-bordered w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded"
-                placeholder="Enter your name"
-                required
-              />
-            </div>
-            <div>
-              <label className="label font-medium text-gray-900 dark:text-gray-200">Photo URL</label>
-              <input
-                name="photoURL"
-                type="text"
-                className="input input-bordered w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded"
-                placeholder="Enter photo URL"
-              />
-            </div>
-            <div>
-              <label className="label font-medium text-gray-900 dark:text-gray-200">Email</label>
-              <input
-                name="email"
-                type="email"
-                className="input input-bordered w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded"
-                placeholder="Enter your email"
-                required
-              />
-            </div>        
-            <div>
-              <label className="label font-medium text-gray-900 dark:text-gray-200">Password</label>
-              <div className="relative">
-                <input
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  className="input input-bordered w-full pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded"
-                  placeholder="Enter your password"
-                  required
-                />
+
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-gray-50 to-emerald-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950 py-16 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h1 className="text-5xl md:text-6xl font-extrabold mb-4 bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
+              Join ImportWave
+            </h1>
+            <p className="text-xl text-gray-600 dark:text-gray-400">
+              Start trading globally in minutes
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            {/* Registration Form */}
+            <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-10 border border-gray-200 dark:border-gray-700">
+              <h2 className="text-3xl font-bold mb-8 text-center">Create Your Account</h2>
+
+              <form onSubmit={handleRegister} className="space-y-6">
+                <div>
+                  <label className="block text-lg font-medium mb-2">Full Name</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="John Doe"
+                    className="input input-bordered w-full text-lg py-4"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-lg font-medium mb-2">Email Address</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="input input-bordered w-full text-lg py-4"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-lg font-medium mb-2">Password</label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={handlePasswordChange}
+                      placeholder="••••••••"
+                      className="input input-bordered w-full text-lg py-4 pr-12"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-xl text-gray-600 dark:text-gray-400"
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
+                  {passwordError && <p className="text-red-500 text-sm mt-2">{passwordError}</p>}
+                  {password && !passwordError && password.length >= 6 && (
+                    <p className="text-green-600 text-sm mt-2">✓ Strong password</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-lg font-medium mb-2">Profile Photo URL (Optional)</label>
+                  <input
+                    type="url"
+                    value={photoURL}
+                    onChange={handlePhotoChange}
+                    placeholder="https://example.com/your-photo.jpg"
+                    className="input input-bordered w-full text-lg py-4"
+                  />
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                    Paste a direct image link for your avatar
+                  </p>
+                </div>
+
                 <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                  aria-label="Toggle password visibility"
+                  type="submit"
+                  disabled={loading || passwordError}
+                  className="w-full py-5 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white font-bold text-xl rounded-2xl shadow-xl transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  {loading ? (
+                    <>
+                      <span className="loading loading-spinner"></span>
+                      Creating Account...
+                    </>
+                  ) : (
+                    "Create Account"
+                  )}
+                </button>
+              </form>
+
+              <div className="mt-8">
+                <div className="divider text-gray-500 dark:text-gray-400">OR</div>
+
+                <button
+                  onClick={handleGoogleSignIn}
+                  disabled={loading}
+                  className="w-full mt-6 py-4 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 text-gray-800 dark:text-gray-200 font-bold text-lg rounded-2xl shadow-lg transition flex items-center justify-center gap-4 disabled:opacity-70"
+                >
+                  {loading ? (
+                    <span className="loading loading-spinner"></span>
+                  ) : (
+                    <FaGoogle className="text-xl text-red-500" />
+                  )}
+                  Continue with Google
                 </button>
               </div>
+
+              <p className="text-center mt-8 text-gray-600 dark:text-gray-400">
+                Already have an account?{" "}
+                <Link to="/login" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-bold">
+                  Login here
+                </Link>
+              </p>
             </div>
-            {error && (
-              <p className="text-red-500 text-sm text-center">{error}</p>
-            )}
-            <p className="text-sm text-gray-700 dark:text-gray-300 text-center">
-              Already have an account?{" "}
-              <Link className="text-blue-500 link link-hover" to={"/login"}>
-                Login
-              </Link>
-            </p>
-            <button className="btn btn-neutral w-full mt-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700 transition-colors duration-300">
-              Register
-            </button>
-          </form>
+
+            <div className="order-first lg:order-last">
+              <h3 className="text-2xl font-bold mb-6 text-center lg:text-left">Your Profile Preview</h3>
+              <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-12 text-center border border-gray-200 dark:border-gray-700">
+                <div className="relative inline-block mb-8">
+                  <img
+                    src={
+                      photoPreview ||
+                      "https://i.ibb.co/Q3LYhjtx/pngtree-user-icon-png-image-1796659.jpg"
+                    }
+                    alt="Profile preview"
+                    className="w-48 h-48 rounded-full object-cover border-8 border-gray-200 dark:border-gray-800 shadow-2xl"
+                    onError={(e) => {
+                      e.target.src = "https://i.ibb.co/Q3LYhjtx/pngtree-user-icon-png-image-1796659.jpg";
+                    }}
+                  />
+                  <div className="absolute bottom-4 right-4 w-12 h-12 bg-green-500 rounded-full border-4 border-white dark:border-gray-900"></div>
+                </div>
+
+                <h2 className="text-3xl font-bold mb-3">
+                  {name || "Your Name"}
+                </h2>
+                <p className="text-xl text-gray-600 dark:text-gray-400 mb-6">
+                  {email || "your@email.com"}
+                </p>
+
+                <div className="p-6 bg-gradient-to-r from-blue-100 to-emerald-100 dark:from-blue-900/30 dark:to-emerald-900/30 rounded-2xl">
+                  <p className="text-lg font-medium">Ready to trade globally!</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

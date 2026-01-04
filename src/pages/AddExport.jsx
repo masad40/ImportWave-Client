@@ -1,12 +1,15 @@
 import { useState, useContext } from "react";
 import { Helmet } from "react-helmet";
 import { AuthContext } from "../contexts/AuthContext";
+import toast from "react-hot-toast";
 
 const AddExportProduct = () => {
   const { user } = useContext(AuthContext);
   const userEmail = user?.email;
 
-  const baseUrl = import.meta.env.VITE_API_URL || "https://import-export-server-sigma.vercel.app";
+  const baseUrl =
+    import.meta.env.VITE_API_URL ||
+    "https://import-export-server-sigma.vercel.app";
 
   const [formData, setFormData] = useState({
     name: "",
@@ -17,53 +20,58 @@ const AddExportProduct = () => {
     quantity: "",
   });
 
-  const [successMsg, setSuccessMsg] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
+  const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "image") setImagePreview(value || null);
+
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
   const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) newErrors.name = "Product name is required";
+    if (!formData.image.trim()) newErrors.image = "Image URL is required";
+    if (!formData.price || Number(formData.price) < 0)
+      newErrors.price = "Valid price is required";
+    if (!formData.country.trim())
+      newErrors.country = "Origin country is required";
     if (
-      !formData.name ||
-      !formData.image ||
-      !formData.price ||
-      !formData.country ||
       !formData.rating ||
-      !formData.quantity
-    ) {
-      setErrorMsg("Please fill all fields.");
-      return false;
-    }
-
-    if (
-      Number(formData.price) < 0 ||
       Number(formData.rating) < 0 ||
-      Number(formData.rating) > 5 ||
-      Number(formData.quantity) <= 0
-    ) {
-      setErrorMsg("Please enter valid numeric values.");
-      return false;
-    }
+      Number(formData.rating) > 5
+    )
+      newErrors.rating = "Rating must be between 0 and 5";
+    if (!formData.quantity || Number(formData.quantity) <= 0)
+      newErrors.quantity = "Quantity must be greater than 0";
 
-    return true;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!userEmail) {
-      setErrorMsg("User email not found. Please login.");
+      toast.error("You must be logged in to add a product");
       return;
     }
 
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      toast.error("Please fix the errors in the form");
+      return;
+    }
 
     setLoading(true);
-    setErrorMsg("");
-    setSuccessMsg("");
 
     const product = {
       ...formData,
@@ -81,10 +89,12 @@ const AddExportProduct = () => {
         body: JSON.stringify(product),
       });
 
+      if (!res.ok) throw new Error("Failed to add product");
+
       const data = await res.json();
 
       if (data.insertedId) {
-        setSuccessMsg("Product added successfully!");
+        toast.success("Product added successfully! 🎉");
         setFormData({
           name: "",
           image: "",
@@ -93,11 +103,13 @@ const AddExportProduct = () => {
           rating: "",
           quantity: "",
         });
+        setImagePreview(null);
       } else {
-        setErrorMsg("Failed to add product. Please try again.");
+        toast.error("Failed to add product");
       }
-    } catch {
-      setErrorMsg("Error occurred while adding product.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Error adding product. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -109,120 +121,190 @@ const AddExportProduct = () => {
         <title>Add Export Product | ImportWave</title>
         <meta
           name="description"
-          content="Add and export products on ImportWave platform."
+          content="Add a new product to export on the ImportWave global marketplace."
         />
       </Helmet>
 
-      <div
-        className="max-w-xl my-10 mx-auto px-6 py-10 rounded-lg shadow-lg
-                    bg-white dark:bg-gray-800
-                    text-gray-900 dark:text-gray-100
-                    border border-gray-200 dark:border-gray-700"
-      >
-        <h2 className="text-3xl font-bold mb-6 text-center">
-          Add Export Product
-        </h2>
-
-        {successMsg && (
-          <p className="text-green-600 dark:text-green-400 font-semibold mb-4 text-center">
-            {successMsg}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+        <div className="text-center mb-10 lg:mb-14">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3">
+            Add New Export Product
+          </h1>
+          <p className="text-base md:text-lg text-gray-600 dark:text-gray-400">
+            Share your products with traders from 150+ countries
           </p>
-        )}
-        {errorMsg && (
-          <p className="text-red-600 dark:text-red-400 font-semibold mb-4 text-center">
-            {errorMsg}
-          </p>
-        )}
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            name="name"
-            placeholder="Product Name"
-            className="input input-bordered w-full bg-gray-100 dark:bg-gray-700
-                     border-gray-300 dark:border-gray-600
-                     text-gray-900 dark:text-gray-100"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-start">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-6 sm:p-8 border border-gray-200 dark:border-gray-700">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Product Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="e.g., Premium Leather Wallet"
+                  className="input input-bordered w-full"
+                  required
+                />
+                {errors.name && (
+                  <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                )}
+              </div>
 
-          <input
-            type="text"
-            name="image"
-            placeholder="Image URL"
-            className="input input-bordered w-full bg-gray-100 dark:bg-gray-700
-                     border-gray-300 dark:border-gray-600
-                     text-gray-900 dark:text-gray-100"
-            value={formData.image}
-            onChange={handleChange}
-            required
-          />
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Image URL
+                </label>
+                <input
+                  type="url"
+                  name="image"
+                  value={formData.image}
+                  onChange={handleChange}
+                  placeholder="https://example.com/image.jpg"
+                  className="input input-bordered w-full"
+                  required
+                />
+                {errors.image && (
+                  <p className="text-red-500 text-sm mt-1">{errors.image}</p>
+                )}
+              </div>
 
-          <input
-            type="number"
-            name="price"
-            placeholder="Price"
-            className="input input-bordered w-full bg-gray-100 dark:bg-gray-700
-                     border-gray-300 dark:border-gray-600
-                     text-gray-900 dark:text-gray-100"
-            value={formData.price}
-            onChange={handleChange}
-            min="0"
-            required
-          />
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Price ($)
+                  </label>
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleChange}
+                    min="0"
+                    step="0.01"
+                    placeholder="99.99"
+                    className="input input-bordered w-full"
+                    required
+                  />
+                  {errors.price && (
+                    <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+                  )}
+                </div>
 
-          <input
-            type="text"
-            name="country"
-            placeholder="Country"
-            className="input input-bordered w-full bg-gray-100 dark:bg-gray-700
-                     border-gray-300 dark:border-gray-600
-                     text-gray-900 dark:text-gray-100"
-            value={formData.country}
-            onChange={handleChange}
-            required
-          />
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Origin Country
+                  </label>
+                  <input
+                    type="text"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    placeholder="e.g., Italy"
+                    className="input input-bordered w-full"
+                    required
+                  />
+                  {errors.country && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.country}
+                    </p>
+                  )}
+                </div>
+              </div>
 
-          <input
-            type="number"
-            name="rating"
-            placeholder="Rating (0-5)"
-            className="input input-bordered w-full bg-gray-100 dark:bg-gray-700
-                     border-gray-300 dark:border-gray-600
-                     text-gray-900 dark:text-gray-100"
-            value={formData.rating}
-            onChange={handleChange}
-            min="0"
-            max="5"
-            step="0.1"
-            required
-          />
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Rating (0-5)
+                  </label>
+                  <input
+                    type="number"
+                    name="rating"
+                    value={formData.rating}
+                    onChange={handleChange}
+                    min="0"
+                    max="5"
+                    step="0.1"
+                    placeholder="4.8"
+                    className="input input-bordered w-full"
+                    required
+                  />
+                  {errors.rating && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.rating}
+                    </p>
+                  )}
+                </div>
 
-          <input
-            type="number"
-            name="quantity"
-            placeholder="Available Quantity"
-            className="input input-bordered w-full bg-gray-100 dark:bg-gray-700
-                     border-gray-300 dark:border-gray-600
-                     text-gray-900 dark:text-gray-100"
-            value={formData.quantity}
-            onChange={handleChange}
-            min="1"
-            required
-          />
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Available Quantity
+                  </label>
+                  <input
+                    type="number"
+                    name="quantity"
+                    value={formData.quantity}
+                    onChange={handleChange}
+                    min="1"
+                    placeholder="100"
+                    className="input input-bordered w-full"
+                    required
+                  />
+                  {errors.quantity && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.quantity}
+                    </p>
+                  )}
+                </div>
+              </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-primary w-full
-                     bg-blue-600 hover:bg-blue-700 text-white
-                     disabled:opacity-50 disabled:cursor-not-allowed
-                     transition-colors duration-300"
-          >
-            {loading ? "Adding..." : "Add Product"}
-          </button>
-        </form>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-4 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white font-semibold text-lg rounded-xl shadow-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+              >
+                {loading ? (
+                  <>
+                    <span className="loading loading-spinner" />
+                    Adding Product...
+                  </>
+                ) : (
+                  "Add Product to Export"
+                )}
+              </button>
+            </form>
+          </div>
+
+          <div className="order-first lg:order-last">
+            <h3 className="text-xl md:text-2xl font-bold mb-5 text-center lg:text-left">
+              Live Preview
+            </h3>
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border-4 border-dashed border-gray-300 dark:border-gray-600 min-h-80 sm:min-h-96 flex items-center justify-center">
+              {imagePreview ? (
+                <img
+                  src={imagePreview}
+                  alt="Product preview"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.src =
+                      "https://via.placeholder.com/600x600?text=Invalid+URL";
+                  }}
+                />
+              ) : (
+                <div className="text-center p-8">
+                  <div className="bg-gray-300 dark:bg-gray-700 rounded-xl w-28 h-28 mx-auto mb-5" />
+                  <p className="text-gray-500 dark:text-gray-400 text-base">
+                    Enter an image URL to see preview
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
